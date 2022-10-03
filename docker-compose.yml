@@ -14,15 +14,21 @@ services:
     ports:
       - 80:8080
     devices:
-      - "/dev/video0:/dev/video0"
+      - ${MOTION_DEVICE}:"/dev/video0"
   mjpg-streamer:
     build: 
       context: "."
       dockerfile: "mjpg-streamer.Dockerfile"
       args:
         - MJPG_STREAMER_INPUT_PLUGIN=${MJPG_STREAMER_INPUT_PLUGIN}
+        - MJPG_STREAMER_USER=${MJPG_STREAMER_USER}
+        - MJPG_STREAMER_PASS=${MJPG_STREAMER_PASS}
+    platform: linux/arm/v7
+    ports:
+      - ${MJPG_STREAMER_IP}:80:8080
     devices:
-      - "/dev/video0:/dev/video0"
+      - ${MJPG_STREAMER_DEVICE}:"/dev/video0"
+      - /dev/vchiq:/dev/vchiq
     
 
   nginx:
