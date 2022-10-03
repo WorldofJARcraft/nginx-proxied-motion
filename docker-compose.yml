@@ -11,6 +11,16 @@ services:
         - TO_EMAIL=${TO_EMAIL}
     volumes: 
       - motion-config:/etc/motion/
+    ports:
+      - 80:8080
+    devices:
+      - "/dev/video0:/dev/video0"
+  mjpg-streamer:
+    build: 
+      context: "."
+      dockerfile: "mjpg-streamer.Dockerfile"
+      args:
+        - MJPG_STREAMER_INPUT_PLUGIN=${MJPG_STREAMER_INPUT_PLUGIN}
     devices:
       - "/dev/video0:/dev/video0"
     
