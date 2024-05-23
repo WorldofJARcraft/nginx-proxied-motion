@@ -9,28 +9,30 @@ services:
         - SG_API_KEY=${SG_API_KEY}
         - FROM_EMAIL=${FROM_EMAIL}
         - TO_EMAIL=${TO_EMAIL}
+        - IR_CAM_USER=${IR_CAM_USER}
+        - IR_CAM_PASS=${IR_CAM_PASS}
+        - IR_CAM_URL=${IR_CAM_URL}
+        - MOTION_CONF_FILE=motion-full.conf
     volumes: 
-      - motion-config:/etc/motion/
+      - motion-capture:/capture
     ports:
-      - 80:8080
+      - 8080:8080
+      - 8081:8081
     devices:
-      - ${MOTION_DEVICE}:"/dev/video0"
-  mjpg-streamer:
+      - ${MOTION_DEVICE}
+  motion-light:
     build: 
       context: "."
-      dockerfile: "mjpg-streamer.Dockerfile"
+      dockerfile: "motion.Dockerfile"
       args:
-        - MJPG_STREAMER_INPUT_PLUGIN=${MJPG_STREAMER_INPUT_PLUGIN}
-        - MJPG_STREAMER_USER=${MJPG_STREAMER_USER}
-        - MJPG_STREAMER_PASS=${MJPG_STREAMER_PASS}
-    platform: linux/arm/v7
+        - MOTION_CONF_FILE=motion-light.conf
+        - IR_CAM_USER=${IR_CAM_USER}
+        - IR_CAM_PASS=${IR_CAM_PASS}
+        - IR_CAM_URL=${IR_CAM_URL}
     ports:
-      - ${MJPG_STREAMER_IP}:80:8080
+      - 8081:8081
     devices:
-      - ${MJPG_STREAMER_DEVICE}:"/dev/video0"
-      - /dev/vchiq:/dev/vchiq
-    
-
+      - ${MOTION_DEVICE}
   nginx:
     image: nginx:1.23-alpine
     container_name: nginx
@@ -44,9 +46,6 @@ services:
      - motion
 
 volumes:
-  motion-config:
-    external: true
-  nginx-config:
-    external: true
-  nginx-certs:
-    external: true
+  motion-capture: {}
+  nginx-config: {}
+  nginx-certs: {}
