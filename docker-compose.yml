@@ -11,7 +11,7 @@ services:
         - TO_EMAIL=${TO_EMAIL}
         - IR_CAM_USER=${IR_CAM_USER}
         - IR_CAM_PASS=${IR_CAM_PASS}
-        - IR_CAM_URL=${IR_CAM_URL}
+        - IR_CAM_URL=10.0.0.3:8081
         - MOTION_CONF_FILE=motion-full.conf
         - MOTION_PRIVKEY=${MOTION_FULL_PRIVKEY}
         - SERVER_URL=${SERVER_URL}
