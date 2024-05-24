@@ -13,6 +13,10 @@ services:
         - IR_CAM_PASS=${IR_CAM_PASS}
         - IR_CAM_URL=${IR_CAM_URL}
         - MOTION_CONF_FILE=motion-full.conf
+        - MOTION_PRIVKEY=${MOTION_FULL_PRIVKEY}
+        - SERVER_URL=${SERVER_URL}
+        - SERVER_PUBKEY=${SERVER_PUBKEY}
+        - MOTION_WG_IP=10.0.0.2
     volumes: 
       - motion-capture:/capture
     ports:
@@ -20,6 +24,8 @@ services:
       - 8081:8081
     devices:
       - ${MOTION_DEVICE}
+    cap_add:
+      - NET_ADMIN
   motion-light:
     build: 
       context: "."
@@ -29,21 +35,33 @@ services:
         - IR_CAM_USER=${IR_CAM_USER}
         - IR_CAM_PASS=${IR_CAM_PASS}
         - IR_CAM_URL=${IR_CAM_URL}
+        - MOTION_PRIVKEY=${MOTION_LIGHT_PRIVKEY}
+        - SERVER_URL=${SERVER_URL}
+        - SERVER_PUBKEY=${SERVER_PUBKEY}
+        - MOTION_WG_IP=10.0.0.3
     ports:
       - 8081:8081
     devices:
       - ${MOTION_DEVICE}
+    cap_add:
+      - NET_ADMIN
   nginx:
-    image: nginx:1.23-alpine
+    build: 
+      context: "."
+      dockerfile: "nginx.Dockerfile"
+      args:
+        - SERVER_PRIVKEY=$SERVER_PRIVKEY
+        - MOTION_FULL_PUBKEY=$MOTION_FULL_PUBKEY
+        - MOTION_LIGHT_PUBKEY=$MOTION_LIGHT_PUBKEY
     container_name: nginx
-    volumes:
-      - nginx-config:/etc/nginx/conf.d/default.conf
-      - nginx-certs:/etc/nginx/cert
     ports:
-      - 80:80
-      - 443:443
-    links:
-     - motion
+      - 127.0.0.1:5000:80
+      - 51820:51820/udp
+    cap_add:
+      - NET_ADMIN
+    sysctls:
+      - net.ipv4.ip_forward=1
+      - net.ipv4.conf.all.src_valid_mark=1
 
 volumes:
   motion-capture: {}

@@ -8,6 +8,11 @@ ARG IR_CAM_URL="unknown"
 ARG IR_CAM_USER="unknown"
 ARG IR_CAM_PASS="unknown"
 
+ARG MOTION_PRIVKEY
+ARG SERVER_PUBKEY
+ARG SERVER_URL
+ARG MOTION_WG_IP
+
 ENV SG_API_KEY=${SG_API_KEY}
 ENV FROM_EMAIL=${FROM_EMAIL}
 ENV TO_EMAIL=${TO_EMAIL}
@@ -15,10 +20,15 @@ ENV IR_CAM_URL=$IR_CAM_URL
 ENV IR_CAM_USER=$IR_CAM_USER
 ENV IR_CAM_PASS=$IR_CAM_PASS
 
+ENV MOTION_PRIVKEY=$MOTION_PRIVKEY
+ENV SERVER_PUBKEY=$SERVER_PUBKEY
+ENV SERVER_URL=$SERVER_URL
+ENV MOTION_WG_IP=$MOTION_WG_IP
+
 # enable testing repository, which we need for motion
 RUN echo "@testing https://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories
 
-RUN apk add --update motion@testing ffmpeg python3 py-pip gettext-envsubst
+RUN apk add --update motion@testing ffmpeg python3 py-pip gettext-envsubst wireguard-tools-wg wireguard-tools-wg-quick
 
 WORKDIR /tmp
 
@@ -35,4 +45,10 @@ RUN cd /etc/motion/template && for file in `ls`; do echo "Subbed $file:"; envsub
 
 RUN mv /etc/motion/$MOTION_CONF_FILE /etc/motion/motion.conf
 
-ENTRYPOINT [ "motion", "-c", "/etc/motion/motion.conf", "-n" ]
+COPY entrypoint.sh /bin/entrypoint.sh 
+
+COPY wgconf/motion-full.conf /etc/wireguard/wg0.conf.template
+
+RUN envsubst < /etc/wireguard/wg0.conf.template > /etc/wireguard/wg0.conf
+
+ENTRYPOINT ["/bin/sh","-c", "/bin/entrypoint.sh"]
