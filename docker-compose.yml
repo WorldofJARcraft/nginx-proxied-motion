@@ -45,6 +45,7 @@ services:
       - ${MOTION_DEVICE}
     cap_add:
       - NET_ADMIN
+    privileged: true
   nginx:
     build: 
       context: "."
