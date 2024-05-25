@@ -36,8 +36,8 @@ mail = Mail(from_email=from_email, subject=subject, to_emails=to_email, html_con
 mail.add_attachment(attachment)
 try:
     response = sg.send(mail.get())
+    print(response.status_code)
+    print(response.body)
+    print(response.headers)
 except HTTPError as e:
     print(e.to_dict)
-print(response.status_code)
-print(response.body)
-print(response.headers)

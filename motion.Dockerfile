@@ -33,6 +33,7 @@ RUN apk add --update motion@testing ffmpeg python3 py-pip gettext-envsubst wireg
 WORKDIR /tmp
 
 COPY send-email.py /usr/sbin/
+RUN chmod +x /usr/sbin/send-email.py
 COPY requirements.txt /tmp/
 
 RUN pip3 install --break-system-packages -r requirements.txt
