@@ -16,4 +16,6 @@ COPY wgconf/server.conf /etc/wireguard/wg0.conf.template
 
 RUN envsubst < /etc/wireguard/wg0.conf.template > /etc/wireguard/wg0.conf
 
+COPY nginx-config/default /etc/nginx/nginx.conf
+
 CMD ["sh", "-c", "/bin/entrypoint-nginx.sh"]
