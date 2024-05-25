@@ -26,7 +26,9 @@ services:
       - ${MOTION_DEVICE}
     cap_add:
       - NET_ADMIN
+    restart: always
   motion-light:
+    restart: always
     build: 
       context: "."
       dockerfile: "motion.Dockerfile"
@@ -47,6 +49,7 @@ services:
       - NET_ADMIN
     privileged: true
   nginx:
+    restart: always
     build: 
       context: "."
       dockerfile: "nginx.Dockerfile"
