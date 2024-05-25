@@ -56,8 +56,8 @@ services:
         - MOTION_LIGHT_PUBKEY=$MOTION_LIGHT_PUBKEY
     container_name: nginx
     ports:
-      - 127.0.0.1:5000:80
-      - 51820:51820/udp
+      - 127.0.0.1:8088:80
+      - 51821:51821/udp
     cap_add:
       - NET_ADMIN
     sysctls:
