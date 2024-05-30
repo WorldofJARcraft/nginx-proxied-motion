@@ -17,11 +17,14 @@ services:
         - SERVER_URL=${SERVER_URL}
         - SERVER_PUBKEY=${SERVER_PUBKEY}
         - MOTION_WG_IP=10.0.0.2
+        - EMAIL_PASSWORD=${EMAIL_PASSWORD}
+        - EMAIL_SCRIPT=${EMAIL_SCRIPT}
     volumes: 
       - motion-capture:/capture
     ports:
       - 8080:8080
       - 8081:8081
+      - 8082:8082
     devices:
       - ${MOTION_DEVICE}
     cap_add:

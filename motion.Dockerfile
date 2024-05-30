@@ -7,6 +7,8 @@ ARG MOTION_CONF_FILE="motion-full.conf"
 ARG IR_CAM_URL="unknown"
 ARG IR_CAM_USER="unknown"
 ARG IR_CAM_PASS="unknown"
+ARG EMAIL_SCRIPT="send-email-smtp.py"
+ARG EMAIL_PASSWORD="unknown"
 
 ARG MOTION_PRIVKEY
 ARG SERVER_PUBKEY
@@ -24,6 +26,8 @@ ENV MOTION_PRIVKEY=$MOTION_PRIVKEY
 ENV SERVER_PUBKEY=$SERVER_PUBKEY
 ENV SERVER_URL=$SERVER_URL
 ENV MOTION_WG_IP=$MOTION_WG_IP
+ENV EMAIL_SCRIPT=$EMAIL_SCRIPT
+ENV EMAIL_PASSWORD=$EMAIL_PASSWORD
 
 # enable testing repository, which we need for motion
 RUN echo "@testing https://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories
@@ -33,7 +37,8 @@ RUN apk add --update motion@testing ffmpeg python3 py-pip gettext-envsubst wireg
 WORKDIR /tmp
 
 COPY send-email.py /usr/sbin/
-RUN chmod +x /usr/sbin/send-email.py
+COPY send-email-smtp.py /usr/sbin/
+RUN chmod +x /usr/sbin/send-email.py && chmod +x /usr/sbin/send-email-smtp.py
 COPY requirements.txt /tmp/
 
 RUN pip3 install --break-system-packages -r requirements.txt
@@ -51,5 +56,6 @@ COPY entrypoint.sh /bin/entrypoint.sh
 COPY wgconf/motion-full.conf /etc/wireguard/wg0.conf.template
 
 RUN envsubst < /etc/wireguard/wg0.conf.template > /etc/wireguard/wg0.conf
+
 
 ENTRYPOINT ["/bin/sh","-c", "/bin/entrypoint.sh"]
