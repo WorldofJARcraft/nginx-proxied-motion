@@ -19,6 +19,15 @@ http {
 		location /102/stream {
 			proxy_pass http://10.0.0.2:8081/102/stream;
 		}
+
+		location /captures {
+			proxy_pass http://10.0.0.2:8082/;
+		}
+
+		location ~* ^/(.*)mkv {
+			proxy_pass http://10.0.0.2:8082/$1mkv;
+			
+		}
 	
 		access_log /dev/stdout;
 	}
